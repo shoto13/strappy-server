@@ -29,9 +29,6 @@ app.get('/', (req,res) => {
     res.send('<h1>Hello world</h1>')
 })
 
-app.get('/test', (req,res) => {
-    res.send('<h1>test success</h1>')
-})
 
 
 //models required to format data
