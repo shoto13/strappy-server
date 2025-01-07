@@ -5,7 +5,6 @@ const passpoer = require('passport');
 
 
 const app = express();
-const port = 8001;
 const cors = require('cors');
 app.use(cors());
 
@@ -21,8 +20,8 @@ mongoose.connect(
     console.log("Error connecting to database",err);
 });
 
-app.listen(port, () => {
-    console.log("Server running on port 8001");
+app.listen(process.env.PORT || 5000, () => {
+    console.log("Server running on assigned PORT");
 });
 
 app.get('/', (req,res) => {
