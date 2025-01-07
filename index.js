@@ -1,20 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const passpoer = require('passport');
+const passport = require('passport');
+const MONGO_URI = process.env.MONGO-URI;
+
 
 
 const app = express();
 const cors = require('cors');
 app.use(cors());
 
-mongoose.connect(
-    "mongodb+srv://wilsonrc99995:acOA0eYaqxHZmVLB@cluster0.dixcpvi.mongodb.net/",
-    {
-        useNewUrlParser:true,
-        useUnifiedTopology:true
-    }
-).then(() => {
+mongoose.connect(MONGO_URI,{useNewUrlParser:true,useUnifiedTopology:true}).then(() => {
     console.log("Connected to MongoDB");
 }).catch((err) => {
     console.log("Error connecting to database",err);
