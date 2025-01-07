@@ -2,12 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
-//const MONGO_URI = process.env.MONGO-URI;
+require('dotenv').config();
+
 
 const app = express();
 const cors = require('cors');
 app.use(cors());
 
+//TO run locally re-create .env file locally
 mongoose.connect(process.env.MONGO-URI, {useNewUrlParser:true,useUnifiedTopology:true}).then(() => {
     console.log("Connected to MongoDB");
 }).catch((err) => {
