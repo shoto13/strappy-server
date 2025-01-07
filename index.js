@@ -30,7 +30,6 @@ app.get('/', (req,res) => {
 })
 
 
-
 //models required to format data
 const Watch = require("./models/watch");
 const Strap = require("./models/strap")
