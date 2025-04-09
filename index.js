@@ -52,6 +52,25 @@ app.get("/watches/:reference", (req,res) => {
         })
 });
 
+app.get("/watches/similar/:baseReference", (req, res) => {
+  const baseRef = req.params.baseReference.toUpperCase();
+
+  Watch.find({ reference: { $regex: `^${baseRef}`, $options: 'i' } })
+    .then((watches) => {
+      if (!watches || watches.length === 0) {
+        return res.status(404).json({ message: "No similar watches found" });
+      } else {
+        console.log(`Found ${watches.length} similar watches`);
+        res.status(200).json(watches);
+      }
+    })
+    .catch((err) => {
+      console.log("Error retrieving similar references:", err);
+      res.status(500).json({ message: "Error fetching similar references" });
+    });
+});
+
+
 //endpoint to get all the straps associated with a watch by id
 app.get("/straps/:reference", (req, res) => {
     console.log("here should be the vals" ,req.params);
