@@ -51,7 +51,6 @@ app.get("/watches/:reference", (req,res) => {
             res.status(500).json({message: "error retrieving watches"})
         })
 });
-
 app.get("/watches/similar/:baseReference", async (req, res) => {
   const baseRef = req.params.baseReference.toUpperCase();
   const limit = parseInt(req.query.limit) || 10;
@@ -60,14 +59,16 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
   try {
     let query;
 
-    if (baseRef.includes("-")) {
-      // It's a specific sub-reference, we only want an exact match
+    const isFullRef = baseRef.includes("-") || baseRef.includes(".");
+
+    if (isFullRef) {
+      // It's a full reference → return only exact match
       query = { reference: baseRef };
     } else {
-      // It's a base reference, we want sub-references (that include a dash)
+      // It's a base model → return refs starting with baseRef + dash or dot
       query = {
         reference: {
-          $regex: `^${baseRef}-`, // must start with baseRef followed by a dash
+          $regex: `^${baseRef}[-.]`,
           $options: "i",
         },
       };
@@ -81,8 +82,7 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
   } catch (err) {
     console.error("Error retrieving similar references:", err);
     res.status(500).json({ message: "Error fetching similar references" });
-  }
-});
+
 
 
 
