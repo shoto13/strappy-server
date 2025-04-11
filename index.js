@@ -52,28 +52,28 @@ app.get("/watches/:reference", (req,res) => {
         })
 });
 
-app.get("/watches/similar/:baseReference", (req, res) => {
+app.get("/watches/similar/:baseReference", async (req, res) => {
   const baseRef = req.params.baseReference.toUpperCase();
   const limit = parseInt(req.query.limit) || 10;
   const skip = parseInt(req.query.skip) || 0;
 
-  // Match references that start with the baseRef PLUS something more
-  Watch.find({
-    reference: {
-      $regex: `^${baseRef}.+`, // must start with baseRef and continue (sub-ref)
-      $options: 'i',
-    },
-  })
-    .skip(skip)
-    .limit(limit)
-    .then((watches) => {
-      res.status(200).json(watches);
+  try {
+    const watches = await Watch.find({
+      reference: {
+        $regex: `^${baseRef}(?![^-])`, // match exact or longer refs starting with this one
+        $options: "i",
+      },
     })
-    .catch((err) => {
-      console.log("Error retrieving similar references:", err);
-      res.status(500).json({ message: "Error fetching similar references" });
-    });
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json(watches);
+  } catch (err) {
+    console.error("Error retrieving similar references:", err);
+    res.status(500).json({ message: "Error fetching similar references" });
+  }
 });
+
 
 
 
