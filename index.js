@@ -54,21 +54,21 @@ app.get("/watches/:reference", (req,res) => {
 
 app.get("/watches/similar/:baseReference", (req, res) => {
   const baseRef = req.params.baseReference.toUpperCase();
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = parseInt(req.query.skip) || 0;
 
-  Watch.find({ reference: { $regex: `^${baseRef}`, $options: 'i' } })
+  Watch.find({ reference: { $regex: `^${baseRef}`, $options: "i" } })
+    .skip(skip)
+    .limit(limit)
     .then((watches) => {
-      if (!watches || watches.length === 0) {
-        return res.status(404).json({ message: "No similar watches found" });
-      } else {
-        console.log(`Found ${watches.length} similar watches`);
-        res.status(200).json(watches);
-      }
+      res.status(200).json(watches);
     })
     .catch((err) => {
       console.log("Error retrieving similar references:", err);
       res.status(500).json({ message: "Error fetching similar references" });
     });
 });
+
 
 app.get("/watches/prefix/:make/:prefix", (req, res) => {
   const make = req.params.make.toLowerCase();
