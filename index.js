@@ -73,24 +73,24 @@ app.get("/watches/similar/:baseReference", (req, res) => {
 app.get("/watches/prefix/:make/:prefix", (req, res) => {
   const make = req.params.make.toLowerCase();
   const prefix = req.params.prefix;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = parseInt(req.query.skip) || 0;
 
   Watch.find({
     make: { $regex: `^${make}`, $options: "i" },
     reference: { $regex: `^${prefix}`, $options: "i" },
   })
+    .skip(skip)
+    .limit(limit)
     .then((watches) => {
-      if (!watches || watches.length === 0) {
-        return res.status(404).json({ message: "No watches found with this prefix" });
-      } else {
-        console.log(`Found ${watches.length} watches with prefix ${prefix}`);
-        res.status(200).json(watches);
-      }
+      res.status(200).json(watches);
     })
     .catch((err) => {
       console.log("Error fetching prefix-matching watches:", err);
       res.status(500).json({ message: "Error fetching watches" });
     });
 });
+
 
 
 
