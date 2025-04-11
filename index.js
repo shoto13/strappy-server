@@ -73,6 +73,8 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
       };
     }
 
+    console.log("🔍 Running query:", JSON.stringify(query));
+
     const watches = await Watch.find(query)
       .skip(skip)
       .limit(limit);
@@ -83,6 +85,7 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
     res.status(500).json({ message: "Error fetching similar references" });
   }
 });
+
 
 // Get watches by prefix (shared base like 116200)
 app.get("/watches/prefix/:make/:prefix", (req, res) => {
