@@ -58,12 +58,11 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
   const skip = parseInt(req.query.skip) || 0;
 
   try {
-    const watches = await Watch.find({
-      reference: {
-        $regex: `^${baseRef}(?![^-])`, // match exact or longer refs starting with this one
-        $options: "i",
-      },
-    })
+    const query = baseRef.includes("-")
+      ? { reference: baseRef } // exact match only if it includes a dash
+      : { reference: { $regex: `^${baseRef}-`, $options: "i" } }; // subrefs only if no dash
+
+    const watches = await Watch.find(query)
       .skip(skip)
       .limit(limit);
 
