@@ -53,6 +53,8 @@ app.get("/watches/:reference", (req, res) => {
 });
 
 app.get("/watches/similar/:baseReference", async (req, res) => {
+  console.log("🚨 Raw incoming baseRef:", req.params.baseReference);
+
   const baseRef = req.params.baseReference;
   const limit = parseInt(req.query.limit) || 10;
   const skip = parseInt(req.query.skip) || 0;
