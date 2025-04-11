@@ -140,6 +140,29 @@ app.get("/straps/:reference", (req, res) => {
   }
 });
 
+
+//WATCHHUB
+// WatchHub: Get a full watch by reference for automatic entry
+app.get("/watchhub/fetch-by-reference/:reference", async (req, res) => {
+  const inputRef = req.params.reference.toUpperCase();
+
+  try {
+    const watch = await Watch.findOne({ reference: inputRef });
+
+    if (!watch) {
+      console.log('❌ [WatchHub] Watch not found for reference:', inputRef);
+      return res.status(404).json({ message: "Watch not found" });
+    }
+
+    console.log('✅ [WatchHub] Watch found:', inputRef);
+    res.status(200).json(watch);
+  } catch (err) {
+    console.error("🔥 [WatchHub] Error retrieving watch:", err);
+    res.status(500).json({ message: "Server error while retrieving watch" });
+  }
+});
+
+
 // Placeholder endpoint for future use
 app.get("/straps/:lug_width", (req, res) => {
   console.log("lug widths: ", req.params);
