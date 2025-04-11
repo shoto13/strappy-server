@@ -52,9 +52,8 @@ app.get("/watches/:reference", (req, res) => {
     });
 });
 
-// Get similar references based on logic (dash or dot = full reference)
 app.get("/watches/similar/:baseReference", async (req, res) => {
-  const baseRef = req.params.baseReference.toUpperCase();
+  const baseRef = req.params.baseReference;
   const limit = parseInt(req.query.limit) || 10;
   const skip = parseInt(req.query.skip) || 0;
 
@@ -63,7 +62,10 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
     const isFullRef = baseRef.includes("-") || baseRef.includes(".");
 
     if (isFullRef) {
-      query = { reference: baseRef };
+      // Force exact match using regex with case-insensitive flag
+      query = {
+        reference: { $regex: `^${baseRef}$`, $options: "i" }
+      };
     } else {
       query = {
         reference: {
@@ -73,18 +75,16 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
       };
     }
 
-    console.log("🔍 Running query:", JSON.stringify(query));
+    console.log("🔍 Final query:", JSON.stringify(query));
 
-    const watches = await Watch.find(query)
-      .skip(skip)
-      .limit(limit);
-
+    const watches = await Watch.find(query).skip(skip).limit(limit);
     res.status(200).json(watches);
   } catch (err) {
     console.error("Error retrieving similar references:", err);
     res.status(500).json({ message: "Error fetching similar references" });
   }
 });
+
 
 
 // Get watches by prefix (shared base like 116200)
