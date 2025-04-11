@@ -58,9 +58,20 @@ app.get("/watches/similar/:baseReference", async (req, res) => {
   const skip = parseInt(req.query.skip) || 0;
 
   try {
-    const query = baseRef.includes("-")
-      ? { reference: baseRef } // exact match only if it includes a dash
-      : { reference: { $regex: `^${baseRef}-`, $options: "i" } }; // subrefs only if no dash
+    let query;
+
+    if (baseRef.includes("-")) {
+      // It's a specific sub-reference, we only want an exact match
+      query = { reference: baseRef };
+    } else {
+      // It's a base reference, we want sub-references (that include a dash)
+      query = {
+        reference: {
+          $regex: `^${baseRef}-`, // must start with baseRef followed by a dash
+          $options: "i",
+        },
+      };
+    }
 
     const watches = await Watch.find(query)
       .skip(skip)
