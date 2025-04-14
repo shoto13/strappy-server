@@ -155,6 +155,27 @@ app.get("/watches/models/:make", async (req, res) => {
   }
 });
 
+app.get("/watches/by-model", async (req, res) => {
+  const { make, model } = req.query;
+
+  if (!make || !model) {
+    return res.status(400).json({ message: "Make and model required" });
+  }
+
+  try {
+    const watches = await Watch.find({
+      make: { $regex: `^${make}`, $options: "i" },
+      model: { $regex: `^${model}`, $options: "i" },
+    });
+
+    res.status(200).json(watches);
+  } catch (err) {
+    console.error("Error fetching watches by model:", err);
+    res.status(500).json({ message: "Error fetching watches" });
+  }
+});
+
+
 
 
 //WATCHHUB
