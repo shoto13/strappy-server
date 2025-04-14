@@ -176,6 +176,11 @@ app.get("/watches/models/:make", async (req, res) => {
 app.get("/watches/by-model", async (req, res) => {
   const { make, model } = req.query;
 
+    // 🔍 Add these logs right here
+  console.log("===== WATCHES BY MODEL REQUEST =====");
+  console.log("Incoming make:", make);
+  console.log("Incoming model:", model);
+
   if (!make || !model) {
     return res.status(400).json({ message: "Make and model required" });
   }
