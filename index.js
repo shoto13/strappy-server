@@ -154,7 +154,6 @@ app.get("/watches/models/:make", async (req, res) => {
     res.status(500).json({ message: "Error fetching models" });
   }
 });
-
 app.get("/watches/by-model", async (req, res) => {
   const { make, model } = req.query;
 
