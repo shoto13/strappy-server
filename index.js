@@ -140,6 +140,22 @@ app.get("/straps/:reference", (req, res) => {
   }
 });
 
+app.get("/watches/models/:make", async (req, res) => {
+  const make = req.params.make.toLowerCase();
+
+  try {
+    const models = await Watch.distinct("model", {
+      make: { $regex: `^${make}`, $options: "i" },
+    });
+
+    res.status(200).json(models);
+  } catch (err) {
+    console.error("Error fetching models by make:", err);
+    res.status(500).json({ message: "Error fetching models" });
+  }
+});
+
+
 
 //WATCHHUB
 // WatchHub: Get a full watch by reference for automatic entry
