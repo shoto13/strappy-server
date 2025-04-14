@@ -32,6 +32,42 @@ app.get('/', (req, res) => {
 const Watch = require("./models/watch");
 const Strap = require("./models/strap");
 
+
+// GET /watches/by-model?make=Omega&model=Speedmaster
+app.get("/watches/by-model", async (req, res) => {
+  const { make, model } = req.query;
+
+    // 🔍 Add these logs right here
+  console.log("===== WATCHES BY MODEL REQUEST =====");
+  console.log("Incoming make:", make);
+  console.log("Incoming model:", model);
+
+  if (!make || !model) {
+    return res.status(400).json({ message: "Make and model required" });
+  }
+
+  try {
+    const watches = await Watch.find(
+      {
+        make: { $regex: make, $options: "i" },
+        model: { $regex: model, $options: "i" },
+      },
+      { reference: 1, _id: 0 }
+    );
+
+    if (!watches.length) {
+      return res.status(404).json({ message: "No references found for this model." });
+    }
+
+    const references = [...new Set(watches.map((w) => w.reference))];
+    res.status(200).json(references);
+  } catch (err) {
+    console.error("Error fetching references:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 // Get specific watch by full reference
 app.get("/watches/:reference", (req, res) => {
   const inputref = req.params.reference.toUpperCase();
@@ -172,39 +208,7 @@ app.get("/watches/models/:make", async (req, res) => {
 
 //SEARCH FOR A WATCH BY MAKE AND MODEL TO RETURN REFERENCE NUMBERS
 
-// GET /watches/by-model?make=Omega&model=Speedmaster
-app.get("/watches/by-model", async (req, res) => {
-  const { make, model } = req.query;
 
-    // 🔍 Add these logs right here
-  console.log("===== WATCHES BY MODEL REQUEST =====");
-  console.log("Incoming make:", make);
-  console.log("Incoming model:", model);
-
-  if (!make || !model) {
-    return res.status(400).json({ message: "Make and model required" });
-  }
-
-  try {
-    const watches = await Watch.find(
-      {
-        make: { $regex: make, $options: "i" },
-        model: { $regex: model, $options: "i" },
-      },
-      { reference: 1, _id: 0 }
-    );
-
-    if (!watches.length) {
-      return res.status(404).json({ message: "No references found for this model." });
-    }
-
-    const references = [...new Set(watches.map((w) => w.reference))];
-    res.status(200).json(references);
-  } catch (err) {
-    console.error("Error fetching references:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 
 
