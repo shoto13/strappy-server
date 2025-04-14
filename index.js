@@ -140,6 +140,38 @@ app.get("/straps/:reference", (req, res) => {
   }
 });
 
+// WATCH SEARCH FUNCTIONALITY (BY MAKE ETC)
+
+// GET /watches/models/:make
+app.get("/watches/models/:make", async (req, res) => {
+  const { make } = req.params;
+
+  if (!make) {
+    return res.status(400).json({ message: "Make is required" });
+  }
+
+  try {
+    const models = await Watch.find(
+      { make: { $regex: `^${make}`, $options: "i" } },
+      { model: 1, _id: 0 }
+    ).lean();
+
+    if (!models.length) {
+      return res.status(404).json({ message: "Make not found" });
+    }
+
+    // Extract unique model names
+    const uniqueModels = [...new Set(models.map((m) => m.model))];
+
+    res.status(200).json(uniqueModels);
+  } catch (err) {
+    console.error("Error fetching models by make:", err);
+    res.status(500).json({ message: "Error fetching models" });
+  }
+});
+
+
+
 
 //WATCHHUB
 // WatchHub: Get a full watch by reference for automatic entry
